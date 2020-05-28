@@ -12,7 +12,12 @@ namespace CIT160GradingCoreUtility
 		{
 			try
 			{
-				if (args[0].ToLower() == "createtemplate")
+				if (args.Length == 0 || args[0].ToLower() == "help")
+				{
+					OutputUsage();
+					return;
+				}
+				else if (args[0].ToLower() == "createtemplate")
 				{
 					TestTemplate t = new TestTemplate();
 					t.Inputs = new List<string>();
@@ -28,11 +33,6 @@ namespace CIT160GradingCoreUtility
 					g.Tests.Add(t);
 					Console.WriteLine(JsonConvert.SerializeObject(g));
 					Console.ReadLine();
-					return;
-				}
-				else if (args[0].ToLower() == "help")
-				{
-					OutputUsage();
 					return;
 				}
 
