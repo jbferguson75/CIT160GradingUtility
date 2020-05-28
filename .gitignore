@@ -10,3 +10,6 @@
 /CIT160GradingConsole/obj/Debug
 /packages
 /CIT160GradingConsole/obj/Release
+/CIT160Grader/bin/Release/netstandard2.0
+/CIT160GradingCoreUtility/bin
+/CIT160GradingCoreUtility/obj

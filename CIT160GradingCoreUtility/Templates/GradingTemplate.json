@@ -1,0 +1,19 @@
+﻿{
+  "Tests": [
+    {
+      "Inputs": [ "0", "0", "10", "10" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "4.14",
+      "AlternativeOutputs": [ "4", "4.1" ]
+    }
+  ],
+  "PossiblePoints": 5.0,
+  "WrongNumberOfInputsPenalty": 0.5,
+  "InsufficientInputsPenalty": 0.5,
+  "NoButtonPenalty": 0.5,
+  "NoDivPenalty": 0.5,
+  "ValidationPenalty": 0.5,
+  "IncorrectResponsePenalty": 0.5,
+  "NoRunPenalty": 1.0,
+  "MinimumSubmissionScore": 1.5
+}

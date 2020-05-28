@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CIT160GradingCoreUtility": {
+      "commandName": "Project",
+      "commandLineArgs": "\"C:\\Users\\joshf\\Desktop\\WebServer\\template1.json\" \"C:\\Users\\joshf\\Desktop\\WebServer\\test.html\""
+    }
+  }
+}
