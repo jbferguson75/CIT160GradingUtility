@@ -3,3 +3,10 @@
 ################################################################################
 
 /.vs
+/CIT160Grader/bin/Debug/netstandard2.0
+/CIT160Grader/obj/Debug/netstandard2.0
+/CIT160Grader/obj
+/CIT160GradingConsole/bin/Debug
+/CIT160GradingConsole/obj/Debug
+/packages
+/CIT160GradingConsole/obj/Release

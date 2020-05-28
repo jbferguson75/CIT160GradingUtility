@@ -40,7 +40,6 @@ namespace CIT160Grader
 
 			StreamWriter reportStream = File.CreateText(Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "-Report.txt"));
 
-			reportStream = File.CreateText(Path.Combine(Path.GetDirectoryName(file), "Report.txt"));
 			GradeFile(file, t, reportStream);
 		}
 
@@ -71,7 +70,7 @@ namespace CIT160Grader
 					feedback.Add("Validation Errors (-" + template.ValidationPenalty + "): ");
 					foreach (Message msg in validation.Messages)
 					{
-						feedback.Add(msg.MessageMessage);
+						feedback.Add("-"+msg.MessageMessage);
 					}
 				}
 
