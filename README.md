@@ -9,18 +9,18 @@ There are 2 projects (currently) in the solution:  CIT160Grader and CIT160Gradin
 The Grading Utility is generic.  It's made to be able to grade most all programming assignments from CIT 160 that involve full HTML and JavaScript including allowing to set the current date for the test.  Specfics about each programming assignment is kept in a json template file.  I'll go through and add a template to the templates folder for every assignment as I can throughout the 2020 Spring semester.  Hopefully by summer term we'll have all of the templates that we need.  There is an example template in the template folder called GradingTemplate.json
 
 ## Builds
-There is a zip file in the Builds folder with a compiled copy of the application.  Just unzip it on your computer and run CIT160GradingConsole.exe from a command window.  Currently it only runs on Windows but in the future I'll convert it to .NET Standard and it will be usable on Mac or Linux as well.
+There are zip files in the Builds folder with a compiled copies of the application for 4 different platforms:  win-x64, linux-x64, osx-x64, and portable.  Just unzip the correct file on your computer and run CIT160GradingCoreUtility(.exe) from a command window.  
 
-## CIT160GradingConsole Usage
+## CIT160GradingCoreUtility Usage
 Usage of the Console application is very simple:
 
-### CIT160GradingConsole createtemplate
+### CIT160GradingCoreUtility createtemplate
 This will output example json for a template.
 
-### CIT160GradingConsole help
+### CIT160GradingCoreUtility help
 Outputs how to use the console application
 
-### CIT160GradingConsole [template file and path] [folder or file path to be graded]
+### CIT160GradingCoreUtility [template file and path] [folder or file path to be graded]
 The template path is the file that the program will use to grade with.  The other argument can take either a single file or a folder.  It will grade all .htm or .html files in the folder.  
 
 ### Report.txt
