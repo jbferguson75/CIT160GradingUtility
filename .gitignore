@@ -8,8 +8,8 @@
 /CIT160Grader/obj
 /CIT160GradingConsole/bin/Debug
 /CIT160GradingConsole/obj/Debug
-/packages
 /CIT160GradingConsole/obj/Release
 /CIT160Grader/bin/Release/netstandard2.0
 /CIT160GradingCoreUtility/bin
 /CIT160GradingCoreUtility/obj
+/packages
