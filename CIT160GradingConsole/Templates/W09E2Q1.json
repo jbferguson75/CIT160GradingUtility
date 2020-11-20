@@ -1,0 +1,37 @@
+﻿{
+  "Tests": [
+    {
+      "Inputs": [ "-4", "5" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "False",
+      "AlternativeOutputs": [ "false" ]
+    },
+    {
+      "Inputs": [ "-4", "6" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "False",
+      "AlternativeOutputs": [ "false" ]
+    },
+    {
+      "Inputs": [ "-4", "25" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "True",
+      "AlternativeOutputs": [ "true" ]
+    },
+    {
+      "Inputs": [ "3", "18" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "True",
+      "AlternativeOutputs": [ "true" ]
+    }
+  ],
+  "PossiblePoints": 16.0,
+  "WrongNumberOfInputsPenalty": 1.0,
+  "InsufficientInputsPenalty": 1.0,
+  "NoButtonPenalty": 1.0,
+  "NoDivPenalty": 1.0,
+  "ValidationPenalty": 1.0,
+  "IncorrectResponsePenalty": 1.0,
+  "NoRunPenalty": 1.0,
+  "MinimumSubmissionScore": 8.0
+}

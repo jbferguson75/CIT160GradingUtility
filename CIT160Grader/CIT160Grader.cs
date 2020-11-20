@@ -1,10 +1,12 @@
-﻿using Newtonsoft.Json;
+﻿using CIT160Cheater;
+using Newtonsoft.Json;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.Extensions;
 using OpenQA.Selenium.Support.UI;
 using RestSharp;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -22,14 +24,45 @@ namespace CIT160Grader
 			double possibleScore = t.PossiblePoints;
 
 			StreamWriter reportStream = File.CreateText(Path.Combine(path, "Report.txt"));
+			StreamWriter suspiciousStream = File.CreateText(Path.Combine(path, "Suspicious.txt"));
 
 			foreach (string file in Directory.GetFiles(path))
 			{
 				if (Path.GetExtension(file) == ".html" || Path.GetExtension(file) == ".htm")
 				{
 					GradeFile(file, t, reportStream);
+					FindSimilarFiles(file, path, suspiciousStream);
 				}
 			}
+
+			reportStream.Flush();
+			reportStream.Close();
+
+			suspiciousStream.Flush();
+			suspiciousStream.Close();
+		}
+
+		public void FindSimilarFiles(string file, string path, StreamWriter suspiciousStream)
+		{
+			List<string> suspiciousFiles = CIT160Cheater.CIT160Cheater.GetSimilarFiles(file, path, .9);
+			
+			if (suspiciousFiles.Count == 0)
+				return;
+
+			suspiciousStream.WriteLine(Path.GetFileName(file));
+			suspiciousStream.WriteLine();
+			suspiciousStream.WriteLine(File.ReadAllText(file));
+			suspiciousStream.WriteLine();
+			
+
+			foreach (string cfile in suspiciousFiles)
+			{
+				suspiciousStream.WriteLine(Path.GetFileName(cfile));
+				suspiciousStream.WriteLine();
+				suspiciousStream.WriteLine(File.ReadAllText(cfile));
+				suspiciousStream.WriteLine();
+			}
+			suspiciousStream.WriteLine("======================================");
 		}
 
 		public void GradeFile(string file, string template)
@@ -40,6 +73,7 @@ namespace CIT160Grader
 
 			StreamWriter reportStream = File.CreateText(Path.Combine(Path.GetDirectoryName(file), Path.GetFileNameWithoutExtension(file) + "-Report.txt"));
 
+			reportStream = File.CreateText(Path.Combine(Path.GetDirectoryName(file), "Report.txt"));
 			GradeFile(file, t, reportStream);
 		}
 
@@ -52,6 +86,8 @@ namespace CIT160Grader
 
 			using (IWebDriver driver = new ChromeDriver())
 			{
+				string all_text = File.ReadAllText(file);
+
 				reportStream.WriteLine("File: " + Path.GetFileName(file));
 				reportStream.WriteLine();
 
@@ -59,20 +95,22 @@ namespace CIT160Grader
 				string url = "file://" + file.Replace("\\", "/");
 				driver.Navigate().GoToUrl(url);
 				reportStream.WriteLine("===========================================");
-				reportStream.WriteLine(driver.PageSource);
+				reportStream.WriteLine(all_text);
 				reportStream.WriteLine("===========================================");
 				reportStream.WriteLine();
 
-				ValidationResponse validation = ValidationCheck(driver.PageSource);
-				if (validation?.Messages?.Length > 0)
-				{
-					score -= template.ValidationPenalty;
-					feedback.Add("Validation Errors (-" + template.ValidationPenalty + "): ");
-					foreach (Message msg in validation.Messages)
-					{
-						feedback.Add("-"+msg.MessageMessage);
-					}
-				}
+				//ValidationResponse validation = ValidationCheck(all_text);
+				//if (validation?.Messages?.Length > 0)
+				//{
+				//	score -= template.ValidationPenalty;
+				//	feedback.Add("Validation Errors (-" + template.ValidationPenalty + "): ");
+				//	foreach (Message msg in validation.Messages)
+				//	{
+				//		feedback.Add(msg.MessageMessage);
+				//	}
+				//}
+
+				Dictionary<string, double> score_penalties = new Dictionary<string, double>();
 
 				foreach (TestTemplate test in template.Tests)
 				{
@@ -89,10 +127,19 @@ namespace CIT160Grader
 						if (elements.Count != test.Inputs.Count)
 						{
 							feedback.Add("Wrong number of inputs - expected: " + test.Inputs.Count + ", actual: " + elements.Count + "(-" + template.WrongNumberOfInputsPenalty + ")");
-							score -= template.WrongNumberOfInputsPenalty;
+							
+							if (!score_penalties.ContainsKey("WrongNumberOfInputsPenalty"))
+							{
+								score_penalties.Add("WrongNumberOfInputsPenalty", template.WrongNumberOfInputsPenalty);
+							}
+
 							if (elements.Count < test.Inputs.Count)
 							{
-								score -= template.InsufficientInputsPenalty;
+								if (!score_penalties.ContainsKey("InsufficientInputsPenalty"))
+								{
+									score_penalties.Add("InsufficientInputsPenalty", template.InsufficientInputsPenalty);
+								}
+
 								isBroken = true;
 								break;
 							}
@@ -103,6 +150,7 @@ namespace CIT160Grader
 						foreach (string input in test.Inputs)
 						{
 							inputs += input + " ";
+							elements[idx].Clear();
 							elements[idx].SendKeys(input);
 							idx++;
 						}
@@ -111,7 +159,12 @@ namespace CIT160Grader
 						if (button == null)
 						{
 							feedback.Add("No button found. (-" + template.NoButtonPenalty + ")");
-							score -= template.NoButtonPenalty;
+
+							if (!score_penalties.ContainsKey("NoButtonPenalty"))
+							{
+								score_penalties.Add("NoButtonPenalty", template.NoButtonPenalty);
+							}
+
 							isBroken = true;
 							break;
 						}
@@ -121,28 +174,48 @@ namespace CIT160Grader
 						if (firstResult == null)
 						{
 							feedback.Add("No div tag found. (-" + template.NoDivPenalty + ")");
-							score -= template.NoDivPenalty;
+
+							if (!score_penalties.ContainsKey("NoDivPenalty"))
+							{
+								score_penalties.Add("NoDivPenalty", template.NoDivPenalty);
+							}
 						}
 
 						string actual = firstResult.GetAttribute("textContent");
 						if (!actual.Contains(test.ExpectedOutput) && test.AlternativeOutputs?.FindAll(o => actual.Contains(o)).FirstOrDefault() == null)
 						{
 							feedback.Add("Incorrect Output. (-" + template.IncorrectResponsePenalty + ")");
-							score -= template.IncorrectResponsePenalty;
+
+							if (!score_penalties.ContainsKey("IncorrectResponsePenalty"))
+							{
+								score_penalties.Add("IncorrectResponsePenalty", template.IncorrectResponsePenalty);
+							}
 						}
 						feedback.Add("Expected: " + test.ExpectedOutput);
 						feedback.Add("Actual: " + actual);
-						if (score < template.MinimumSubmissionScore)
-							score = template.MinimumSubmissionScore;
-
-						feedback.Add("Score: " + score + "/" + possibleScore);
+												
 					}
 					catch
 					{
 						feedback.Add("Program doesn't run without errors. (-" + template.NoRunPenalty + ")");
-						score -= template.NoRunPenalty;
+
+						if (!score_penalties.ContainsKey("NoRunPenalty"))
+						{
+							score_penalties.Add("NoRunPenalty", template.NoRunPenalty);
+						}
 					}
 				}
+
+				foreach(string key in score_penalties.Keys)
+				{
+					score -= score_penalties[key];
+				}
+
+				if (score < template.MinimumSubmissionScore)
+					score = template.MinimumSubmissionScore;
+
+				feedback.Add("Score: " + score + "/" + possibleScore);
+
 				driver.Close();
 
 				if (isBroken)
@@ -152,8 +225,9 @@ namespace CIT160Grader
 				{
 					reportStream.WriteLine(line);
 				}
+				reportStream.WriteLine();
 
-				reportStream.Close();
+				//reportStream.Close();
 			}
 		}
 		private ValidationResponse ValidationCheck(string html)
@@ -165,7 +239,7 @@ namespace CIT160Grader
 
 			request.AddHeader("Content-Type", "text/html; charset=UTF-8");
 			request.AddHeader("UserAgent", "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.101 Safari/537.36");
-			request.AddXmlBody(html);
+			request.AddBody(html);
 			request.AddQueryParameter("out", "json");
 
 			var response = client.Post(request);

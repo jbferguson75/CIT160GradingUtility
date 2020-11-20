@@ -1,0 +1,31 @@
+﻿{
+  "Tests": [
+    {
+      "Inputs": [ "-4", "5", "3" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "-3 0 3",
+      "AlternativeOutputs": [ ]
+    },
+    {
+      "Inputs": [ "12", "24", "2" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "12 14 16 18 20 22 24",
+      "AlternativeOutputs": [ ]
+    },
+    {
+      "Inputs": [ "17", "30", "5" ],
+      "TestDateTime": "2000-01-01T00:00:00",
+      "ExpectedOutput": "20 25 30",
+      "AlternativeOutputs": [ ]
+    }
+  ],
+  "PossiblePoints": 16.0,
+  "WrongNumberOfInputsPenalty": 1.0,
+  "InsufficientInputsPenalty": 1.0,
+  "NoButtonPenalty": 1.0,
+  "NoDivPenalty": 1.0,
+  "ValidationPenalty": 1.0,
+  "IncorrectResponsePenalty": 1.0,
+  "NoRunPenalty": 1.0,
+  "MinimumSubmissionScore": 8.0
+}
